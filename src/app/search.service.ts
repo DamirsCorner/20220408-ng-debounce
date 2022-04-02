@@ -454,6 +454,8 @@ export class SearchService {
   constructor() {}
 
   public search(query?: string): Observable<string[]> {
+    console.log(`${new Date()} Search: ${query}`);
+
     if (query === undefined || query.length === 0) {
       return of([]);
     }

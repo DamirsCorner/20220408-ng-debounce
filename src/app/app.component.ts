@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
+  combineLatest,
   debounceTime,
   distinctUntilChanged,
+  of,
   Subject,
   Subscription,
   switchMap,
@@ -26,9 +28,17 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((searchQuery) => this.searchService.search(searchQuery))
+        switchMap((searchQuery) =>
+          combineLatest([
+            of(searchQuery),
+            this.searchService.search(searchQuery),
+          ])
+        )
       )
-      .subscribe((results) => (this.searchResults = results));
+      .subscribe(([query, results]) => {
+        console.log(`${new Date()} Results: ${query}`);
+        this.searchResults = results;
+      });
   }
 
   public ngOnDestroy(): void {
